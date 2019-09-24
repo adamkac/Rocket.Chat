@@ -256,6 +256,7 @@ class FacebookBridge {
 
     var room = Rooms.findOne(query);
     if (room) {
+      console.log("Push markMessageAsRead", room._id, guest._id, timeOfMessage);
       ReadReceipt.markMessagesAsRead(room._id, guest._id, timeOfMessage);
     }
   }
