@@ -237,11 +237,11 @@ class FacebookBridge {
     var message = event.message;
 
     var userId;
-  
+
     console.log("Received message for user %d and page %d at %d with message:",
-      senderID, recipientID, timeOfMessage);
+      senderId, recipientID, timeOfMessage);
     console.log(JSON.stringify(message));
-  
+    
     if (!FacebookGuest.hasGuest(senderId)) {
       var userDetails = this.getFacebookUserDetails(senderId);
       FacebookGuest.createGuest(senderId, userDetails);
