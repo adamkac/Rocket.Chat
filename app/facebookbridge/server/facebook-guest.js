@@ -1,4 +1,4 @@
-import { setUserAvatar } from "../../lib";
+import { setUserAvatar } from '../../lib';
 
 const Counters = new Mongo.Collection("facebook-guest-counters");
 
@@ -85,6 +85,9 @@ const createGuest = function(senderId, details) {
   var userId = Accounts.insertUserDoc({}, userData);
   if (userId && details.profile_pic) {
     userData._id = userId;
+    // Meteor.runAsUser(userId, () => {
+    //     Meteor.call('setAvatarFromService', details.profile_pic, undefined, 'url', userId);
+    // });
     setUserAvatar(userData, details.profile_pic, null, "url");
   }
 };
