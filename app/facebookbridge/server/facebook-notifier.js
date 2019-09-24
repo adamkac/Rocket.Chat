@@ -1,5 +1,6 @@
 import { FacebookBridge } from "./index";
 import { callbacks } from "../../callbacks";
+import Rooms from "../../models/server/models/Rooms";
 
 callbacks.add(
   "afterSaveMessage",
