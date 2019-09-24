@@ -27,6 +27,14 @@ callbacks.add(
   "afterReadMessages",
   function(rid, userId, lastSeen) {
     console.log("Send read event", rid, userId, lastSeen);
+    var user = Meteor.users.findOne({
+      _id: room.v._id,
+      type: "visiter",
+      visiter_type: "facebook",
+    });
+    if (user) {
+      FacebookBridge.markAsRead(user, rid, userId, lastSeen);
+    }
     return;
   },
   callbacks.priority.LOW,

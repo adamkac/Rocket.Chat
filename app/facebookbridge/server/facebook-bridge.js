@@ -352,6 +352,29 @@ class FacebookBridge {
     });
   }
 
+  markAsRead(user, rid, userId, lastSeen) {
+    var senderId;
+    if (
+      user &&
+      user.profile &&
+      user.profile.facebook &&
+      user.profile.facebook.senderId
+    ) {
+      senderId = user.profile.facebook.senderId;
+    }
+    if (!senderId) {
+      return;
+    }
+    var messageData = {
+      recipient: {
+        id: senderId,
+      },
+      sender_action: "mark_seen",
+    };
+
+    this.callSendAPI(messageData);
+  }
+
   sendMessage(user, message) {
     var senderId;
     if (
