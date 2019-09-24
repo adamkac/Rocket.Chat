@@ -2,9 +2,10 @@ import { FacebookGuest } from "./facebook-guest";
 import { settings } from "../../settings";
 import Rooms from "../../models/server/models/Rooms";
 import { Livechat } from "../../livechat/server/lib/Livechat";
-import url from 'url';
-import getRawBody from 'raw-body';
-import crypto from 'crypto';
+import { ReadReceipt } from "../../../imports/message-read-receipt/server/lib/ReadReceipt";
+import url from "url";
+import getRawBody from "raw-body";
+import crypto from "crypto";
 
 const getRawRequestBody = Meteor.wrapAsync(function(req, callback) {
   getRawBody(req, function(err, buf) {
@@ -17,8 +18,8 @@ const getRawRequestBody = Meteor.wrapAsync(function(req, callback) {
 });
 
 const registerHandler = function(path, callback) {
-    console.log(path);
-    
+  console.log(path);
+
   WebApp.rawConnectHandlers.use("/" + path, Meteor.bindEnvironment(callback));
 };
 
@@ -141,7 +142,11 @@ class FacebookBridge {
       var self = this;
 
       if (reqMethod == "get") {
-        console.log(parsedUrl.query["hub.mode"], parsedUrl.query["hub.verify_token"], parsedUrl.query["hub.challenge"]);
+        console.log(
+          parsedUrl.query["hub.mode"],
+          parsedUrl.query["hub.verify_token"],
+          parsedUrl.query["hub.challenge"]
+        );
         if (
           parsedUrl.query["hub.mode"] === "subscribe" &&
           parsedUrl.query["hub.verify_token"] === this.validationToken
@@ -171,6 +176,8 @@ class FacebookBridge {
             pageEntry.messaging.forEach(function(messagingEvent) {
               if (messagingEvent.message) {
                 self.onFacebookMessage(messagingEvent);
+              } else if (messagingEvent.read) {
+                self.onReceivedMessageRead(messagingEvent);
               } else {
                 console.log(
                   "Webhook received unknown messagingEvent: ",
@@ -196,8 +203,6 @@ class FacebookBridge {
             //     }
             //   });
             // });
-            
-            
           });
 
           // Assume all went well.
@@ -227,7 +232,33 @@ class FacebookBridge {
       return response.data;
     }
   }
+  onReceivedMessageRead(event) {
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
+    var timeOfMessage = event.timestamp;
 
+    // All messages before watermark (a timestamp) or sequence have been seen.
+    var watermark = event.read.watermark;
+    var sequenceNumber = event.read.seq;
+
+    console.log(
+      "Received message read event for watermark %d and sequence " +
+        "number %d",
+      watermark,
+      sequenceNumber
+    );
+    var guest = FacebookGuest.findGuestBySenderId(senderID);
+    if (!guest) return;
+    const query = {
+      open: true,
+      "v._id": guest._id,
+    };
+
+    var room = Rooms.findOne(query);
+    if (room) {
+      ReadReceipt.markMessagesAsRead(room._id, guest._id, timeOfMessage);
+    }
+  }
   onFacebookMessage(event) {
     // console.log('Recieved facebook message:', JSON.stringify(event));
 
@@ -241,26 +272,31 @@ class FacebookBridge {
     var messageId = message.mid;
     var appId = message.app_id;
     var metadata = message.metadata;
-  
+
     // You may get a text or attachment but not both
     var messageText = message.text;
     var messageAttachments = message.attachments;
     var quickReply = message.quick_reply;
-  
+
     if (isEcho) {
-        // Just logging message echoes to console
-        console.log("Received echo for message %s and app %d with metadata %s",
-          messageId, appId, metadata);
-        return;
-      }
-      
-      
-    console.log("Received message for user %d and page %d at %d with message:",
-      senderId, recipientID, timeOfMessage);
+      // Just logging message echoes to console
+      console.log(
+        "Received echo for message %s and app %d with metadata %s",
+        messageId,
+        appId,
+        metadata
+      );
+      return;
+    }
+
+    console.log(
+      "Received message for user %d and page %d at %d with message:",
+      senderId,
+      recipientID,
+      timeOfMessage
+    );
     console.log(JSON.stringify(message));
-    
-      
-      
+
     if (!FacebookGuest.hasGuest(senderId)) {
       var userDetails = this.getFacebookUserDetails(senderId);
       FacebookGuest.createGuest(senderId, userDetails);
@@ -268,8 +304,8 @@ class FacebookBridge {
 
     var guest = FacebookGuest.findGuestBySenderId(senderId);
     const query = {
-        open: true,
-        'v._id': guest._id
+      open: true,
+      "v._id": guest._id,
     };
 
     var room = Rooms.findOne(query);

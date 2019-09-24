@@ -22,3 +22,13 @@ callbacks.add(
   callbacks.priority.LOW,
   "notifyFacebookUserOnMessage"
 );
+
+callbacks.add(
+  "afterReadMessages",
+  function(rid, userId, lastSeen) {
+    console.log("Send read event", rid, userId, lastSeen);
+    return;
+  },
+  callbacks.priority.LOW,
+  "notifyFacebookUserAfterReadMessage"
+);
