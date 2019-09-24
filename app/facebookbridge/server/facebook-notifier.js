@@ -28,7 +28,7 @@ callbacks.add(
   function(rid, userId, lastSeen) {
     console.log("Send read event", rid, userId, lastSeen);
     var user = Meteor.users.findOne({
-      _id: room.v._id,
+      _id: userId,
       type: "visiter",
       visiter_type: "facebook",
     });
