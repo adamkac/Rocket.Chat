@@ -178,6 +178,26 @@ class FacebookBridge {
                 );
               }
             });
+            // pageEntry.messaging.forEach(function(messagingEvent) {
+            //     if (messagingEvent.optin) {
+            //       receivedAuthentication(messagingEvent);
+            //     } else if (messagingEvent.message) {
+            //       receivedMessage(messagingEvent);
+            //     } else if (messagingEvent.delivery) {
+            //       receivedDeliveryConfirmation(messagingEvent);
+            //     } else if (messagingEvent.postback) {
+            //       receivedPostback(messagingEvent);
+            //     } else if (messagingEvent.read) {
+            //       receivedMessageRead(messagingEvent);
+            //     } else if (messagingEvent.account_linking) {
+            //       receivedAccountLink(messagingEvent);
+            //     } else {
+            //       console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+            //     }
+            //   });
+            // });
+            
+            
           });
 
           // Assume all went well.
@@ -217,7 +237,11 @@ class FacebookBridge {
     var message = event.message;
 
     var userId;
-
+  
+    console.log("Received message for user %d and page %d at %d with message:",
+      senderID, recipientID, timeOfMessage);
+    console.log(JSON.stringify(message));
+  
     if (!FacebookGuest.hasGuest(senderId)) {
       var userDetails = this.getFacebookUserDetails(senderId);
       FacebookGuest.createGuest(senderId, userDetails);
