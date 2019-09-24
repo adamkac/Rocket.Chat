@@ -237,11 +237,28 @@ class FacebookBridge {
     var message = event.message;
 
     var userId;
-
+    var isEcho = message.is_echo;
+    var messageId = message.mid;
+    var appId = message.app_id;
+    var metadata = message.metadata;
+  
+    // You may get a text or attachment but not both
+    var messageText = message.text;
+    var messageAttachments = message.attachments;
+    var quickReply = message.quick_reply;
+  
     console.log("Received message for user %d and page %d at %d with message:",
       senderId, recipientID, timeOfMessage);
     console.log(JSON.stringify(message));
     
+    if (isEcho) {
+        // Just logging message echoes to console
+        console.log("Received echo for message %s and app %d with metadata %s",
+          messageId, appId, metadata);
+        return;
+      }
+      
+      
     if (!FacebookGuest.hasGuest(senderId)) {
       var userDetails = this.getFacebookUserDetails(senderId);
       FacebookGuest.createGuest(senderId, userDetails);
