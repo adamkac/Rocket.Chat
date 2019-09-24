@@ -26,7 +26,7 @@ callbacks.add(
 callbacks.add(
   "afterReadMessages",
   function(rid, userId, lastSeen) {
-    console.log("Send read event", rid, userId, lastSeen);
+    console.log("mark as read", rid, userId, lastSeen);
     var user = Meteor.users.findOne({
       _id: userId,
       type: "visiter",

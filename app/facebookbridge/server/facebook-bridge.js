@@ -372,6 +372,15 @@ class FacebookBridge {
       sender_action: "mark_seen",
     };
 
+    console.log(
+      "Send read event",
+      user,
+      senderId,
+      rid,
+      userId,
+      lastSeen,
+      messageData
+    );
     this.callSendAPI(messageData);
   }
 
