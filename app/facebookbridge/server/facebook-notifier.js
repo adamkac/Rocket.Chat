@@ -32,6 +32,8 @@ callbacks.add(
       type: "visiter",
       visiter_type: "facebook",
     });
+
+    console.log(user);
     if (user) {
       FacebookBridge.markAsRead(user, rid, userId, lastSeen);
     }
