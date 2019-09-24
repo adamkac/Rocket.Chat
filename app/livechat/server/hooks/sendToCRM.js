@@ -115,7 +115,7 @@ callbacks.add('afterSaveMessage', function(message, room) {
 	sendToCRM('Message', room, [message]);
 	return message;
 }, callbacks.priority.MEDIUM, 'livechat-send-crm-message');
-git status
+
 callbacks.add('livechat.leadCapture', (room) => {
 	if (!settings.get('Livechat_webhook_on_capture')) {
 		return room;
