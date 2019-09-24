@@ -1,4 +1,4 @@
-import FacebookBridge from "./facebook-bridge";
+import { FacebookBridge } from "./index";
 import { callbacks } from "../../callbacks";
 
 callbacks.add(

@@ -1,7 +1,7 @@
-import FacebookBridge from './facebook-bridge';
+import FacebookBr from './facebook-bridge';
 import FacebookNotifier from './facebook-notifier';
 import './settings';
-new FacebookBridge();
+const FacebookBridge  = new FacebookBr();
 
 export {
 	FacebookBridge,
