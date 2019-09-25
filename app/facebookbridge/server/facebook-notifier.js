@@ -33,7 +33,7 @@ callbacks.add(
     };
 
     var room = Rooms.findOne(query);
-    if (room) {
+    if (room && room.t === "l" && room.v._id !== message.u._id) {
       var user = Meteor.users.findOne({
         _id: room.v._id,
         type: "visiter",
