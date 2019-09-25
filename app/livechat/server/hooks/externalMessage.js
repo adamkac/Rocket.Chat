@@ -54,7 +54,7 @@ callbacks.add(
 
     try {
       const response = HTTP.get("https://api.api.ai/api/query?v=20150910", {
-        data: {
+        params: {
           query: message.msg,
           lang: apiaiLanguage,
           sessionId: room._id,
